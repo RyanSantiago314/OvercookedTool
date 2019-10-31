@@ -9,7 +9,4 @@ public class GameDataBase
     public float OvenTimer = 25;
     public float FryerTimer = 15;
     public float StoveTimer = 20;
-
-    //three of each order card
-    public int CardCount = 3;
 }
