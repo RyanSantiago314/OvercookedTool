@@ -11,6 +11,8 @@ public class OrderWindow : MonoBehaviour
     public Image timeBar1;
     public Image timeBar2;
     public Image timeBar3;
+    public Text scoreText;
+    public Text pauseButtonText;
 
     public Sprite burger;
     public Sprite cheeseBurger;
@@ -32,10 +34,15 @@ public class OrderWindow : MonoBehaviour
     int gameScore;
 
     bool playing = true;
+    bool noCards = false;
 
-    float OrderTimer1;
-    float OrderTimer2;
-    float OrderTimer3;
+    float OrderTimer1 = 120;
+    float OrderTimer2 = 120;
+    float OrderTimer3 = 120;
+
+    int currentOrder1;
+    int currentOrder2;
+    int currentOrder3;
 
     float MaxOrderTime = 120;
     int CardCount = 3;
@@ -45,7 +52,7 @@ public class OrderWindow : MonoBehaviour
     int[] pointValues = new int[12];
 
 
-    public enum orderCards
+    public enum orderCards //never used just for reference
     {
         BUR = 0,
         CHB = 1,
@@ -67,7 +74,22 @@ public class OrderWindow : MonoBehaviour
         for(int i = 0; i < cardCounts.Length; i++)
         {
             cardCounts[i] = CardCount;
+            if (i == (int)orderCards.SAL)
+                pointValues[i] = 5;
+            else if (i == (int)orderCards.CHB || i == (int)orderCards.GRC || i == (int)orderCards.FRI || i == (int)orderCards.GAS || i == (int)orderCards.SUP)
+                pointValues[i] = 10;
+            else if (i == (int)orderCards.BUR || i == (int)orderCards.VEG)
+                pointValues[i] = 15;
+            else if (i == (int)orderCards.FIC || i == (int)orderCards.CHP)
+                pointValues[i] = 20;
+            else
+                pointValues[i] = 25;
+
         }
+        gameTimer = gameTime;
+        ChangeOrder(Order1, Random.Range(0, 12), currentOrder1);
+        ChangeOrder(Order2, Random.Range(0, 12), currentOrder2);
+        ChangeOrder(Order3, Random.Range(0, 12), currentOrder3);
     }
 
     // Update is called once per frame
@@ -89,19 +111,19 @@ public class OrderWindow : MonoBehaviour
 
             if(OrderTimer1 <= 0)
             {
-                ChangeOrder(Order1, rand1);
+                ChangeOrder(Order1, rand1, currentOrder1);
                 OrderTimer1 = MaxOrderTime;
                 gameScore -= 10;
             }
             if(OrderTimer2 <= 0)
             {
-                ChangeOrder(Order2, rand2);
+                ChangeOrder(Order2, rand2, currentOrder2);
                 OrderTimer2 = MaxOrderTime;
                 gameScore -= 10;
             }
             if(OrderTimer3 <= 0)
             {
-                ChangeOrder(Order3, rand3);
+                ChangeOrder(Order3, rand3, currentOrder3);
                 OrderTimer3 = MaxOrderTime;
                 gameScore -= 10;
             }
@@ -109,35 +131,80 @@ public class OrderWindow : MonoBehaviour
             OrderTimer1 -= Time.deltaTime;
             OrderTimer2 -= Time.deltaTime;
             OrderTimer3 -= Time.deltaTime;
+
+            if (noCards)
+            {
+                for (int i = 0; i < cardCounts.Length; i++)
+                {
+                    cardCounts[i] = CardCount;
+                }
+                noCards = false;
+            }
+            pauseButtonText.text = "Pause";
+            gameTimer -= Time.deltaTime;
+            if (gameTimer <= 0)
+                playing = false;
         }
+        else
+        {
+            pauseButtonText.text = "Resume";
+        }
+
+        scoreText.text = gameScore.ToString();
+
+        
         
     }
 
-    public void GameStart()
+    public void GameStartPause()
     {
-        playing = true;
+        if (playing)
+            playing = false;
+        else
+            playing = true;
+    }
+
+    public void GameReset()
+    {
+        gameScore = 0;
+        OrderTimer1 = MaxOrderTime;
+        OrderTimer2 = MaxOrderTime;
+        OrderTimer3 = MaxOrderTime;
+        gameTimer = gameTime;
+        ChangeOrder(Order1, Random.Range(0, 12), currentOrder1);
+        ChangeOrder(Order2, Random.Range(0, 12), currentOrder2);
+        ChangeOrder(Order3, Random.Range(0, 12), currentOrder3);
     }
 
     public void ClearOrder1()
     {
-        //gameScore += pointValue[i];
-        ChangeOrder(Order1, Random.Range(0,12));
-        OrderTimer1 = MaxOrderTime;
+        if (playing)
+        {
+            gameScore += pointValues[currentOrder1];
+            ChangeOrder(Order1, Random.Range(0, 12), currentOrder1);
+            OrderTimer1 = MaxOrderTime;
+        }
     }
     public void ClearOrder2()
     {
-        //gameScore += pointValue[i];
-        ChangeOrder(Order2, Random.Range(0,12));
-        OrderTimer2 = MaxOrderTime;
+        if (playing)
+        {
+            gameScore += pointValues[currentOrder2];
+            ChangeOrder(Order2, Random.Range(0, 12), currentOrder2);
+            OrderTimer2 = MaxOrderTime;
+        }
     }
     public void ClearOrder3()
     {
-        //gameScore += pointValue[i];
-        ChangeOrder(Order3, Random.Range(0,12));
-        OrderTimer3 = MaxOrderTime;
+        if (playing)
+        {
+            gameScore += pointValues[currentOrder3];
+            ChangeOrder(Order3, Random.Range(0, 12), currentOrder3);
+            OrderTimer3 = MaxOrderTime;
+        }
     }
 
-    void ChangeOrder(Image Order, int num)
+    void ChangeOrder(Image Order, int num, int currentOrder)
     {
         switch(num)
         {
@@ -147,10 +214,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = burger;
                     cardCounts[0]--;
+                    currentOrder = 0;
                 }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -160,10 +228,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = cheeseBurger;
                     cardCounts[1]--;
+                    currentOrder = 1;
                 }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -173,10 +242,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = cheesePizza;
                     cardCounts[2]--;
-                }
+                        currentOrder = 2;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -186,10 +256,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = meatPizza;
                     cardCounts[3]--;
-                }
+                        currentOrder = 3;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -199,10 +270,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = fishPizza;
                     cardCounts[4]--;
-                }
+                        currentOrder = 4;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -212,10 +284,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = fishNChips;
                     cardCounts[5]--;
-                }
+                        currentOrder = 5;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -225,10 +298,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = fries;
                     cardCounts[6]--;
-                }
+                        currentOrder = 6;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -238,10 +312,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = vegWich;
                     cardCounts[7]--;
-                }
+                        currentOrder = 7;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -251,10 +326,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = grilledCheese;
                     cardCounts[8]--;
-                }
+                        currentOrder = 8;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -264,10 +340,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = salad;
                     cardCounts[9]--;
-                }
+                        currentOrder = 9;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -277,10 +354,11 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = gardenSalad;
                     cardCounts[10]--;
-                }
+                        currentOrder = 10;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
@@ -290,16 +368,18 @@ public class OrderWindow : MonoBehaviour
                 {
                     Order.sprite = soup;
                     cardCounts[11]--;
-                }
+                        currentOrder = 11;
+                    }
                 else
                 {
-                    ChangeOrder(Order, ++num);
+                    ChangeOrder(Order, ++num, currentOrder);
                 }
                 break;
             }
             default:
             {
-                Debug.Log("No cards left");
+                noCards = true;
+                Debug.Log("Replenishing deck");
                 break;
             }
         }
