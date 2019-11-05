@@ -13,6 +13,7 @@ public class OrderWindow : MonoBehaviour
     public Image timeBar3;
     public Text scoreText;
     public Text pauseButtonText;
+    public Text timeText;
 
     public Sprite burger;
     public Sprite cheeseBurger;
@@ -27,7 +28,7 @@ public class OrderWindow : MonoBehaviour
     public Sprite gardenSalad;
     public Sprite soup;
 
-    float gameTime = 600;
+    float gameTime = 601;
     float gameTimer;
     int gameMinutes;
     int gameSeconds;
@@ -71,9 +72,8 @@ public class OrderWindow : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        for(int i = 0; i < cardCounts.Length; i++)
+        for(int i = 0; i < pointValues.Length; i++)
         {
-            cardCounts[i] = CardCount;
             if (i == (int)orderCards.SAL)
                 pointValues[i] = 5;
             else if (i == (int)orderCards.CHB || i == (int)orderCards.GRC || i == (int)orderCards.FRI || i == (int)orderCards.GAS || i == (int)orderCards.SUP)
@@ -87,9 +87,16 @@ public class OrderWindow : MonoBehaviour
 
         }
         gameTimer = gameTime;
-        ChangeOrder(Order1, Random.Range(0, 12), currentOrder1);
-        ChangeOrder(Order2, Random.Range(0, 12), currentOrder2);
-        ChangeOrder(Order3, Random.Range(0, 12), currentOrder3);
+
+        int rand1 = Random.Range(0, 12);
+        int rand2 = Random.Range(0, 12);
+        int rand3 = Random.Range(0, 12);
+        ChangeOrder(Order1, rand1);
+        ChangeOrder(Order2, rand2);
+        ChangeOrder(Order3, rand3);
+        currentOrder1 = rand1;
+        currentOrder2 = rand2;
+        currentOrder3 = rand3;
     }
 
     // Update is called once per frame
@@ -101,29 +108,25 @@ public class OrderWindow : MonoBehaviour
             int rand2 = Random.Range(0,12);
             int rand3 = Random.Range(0,12);
 
-            timeBar1.fillAmount = OrderTimer1/MaxOrderTime;
-            timeBar2.fillAmount = OrderTimer2/MaxOrderTime;
-            timeBar3.fillAmount = OrderTimer3/MaxOrderTime;
-
             timeBar1.color = Color.Lerp(Color.red, Color.green, timeBar1.fillAmount);
             timeBar2.color = Color.Lerp(Color.red, Color.green, timeBar2.fillAmount);
             timeBar3.color = Color.Lerp(Color.red, Color.green, timeBar3.fillAmount);
 
             if(OrderTimer1 <= 0)
             {
-                ChangeOrder(Order1, rand1, currentOrder1);
+                ChangeOrder(Order1, rand1);
                 OrderTimer1 = MaxOrderTime;
                 gameScore -= 10;
             }
             if(OrderTimer2 <= 0)
             {
-                ChangeOrder(Order2, rand2, currentOrder2);
+                ChangeOrder(Order2, rand2);
                 OrderTimer2 = MaxOrderTime;
                 gameScore -= 10;
             }
             if(OrderTimer3 <= 0)
             {
-                ChangeOrder(Order3, rand3, currentOrder3);
+                ChangeOrder(Order3, rand3);
                 OrderTimer3 = MaxOrderTime;
                 gameScore -= 10;
             }
@@ -144,6 +147,9 @@ public class OrderWindow : MonoBehaviour
             gameTimer -= Time.deltaTime;
             if (gameTimer <= 0)
                 playing = false;
+
+            gameMinutes = (int)gameTimer / 60;
+            gameSeconds = (int)gameTimer % 60;
         }
         else
         {
@@ -151,8 +157,14 @@ public class OrderWindow : MonoBehaviour
         }
 
         scoreText.text = gameScore.ToString();
+        if (gameSeconds > 9)
+            timeText.text = gameMinutes + ":" + gameSeconds;
+        else
+            timeText.text = gameMinutes + ":0" + gameSeconds;
 
-        
+        timeBar1.fillAmount = OrderTimer1/MaxOrderTime;
+        timeBar2.fillAmount = OrderTimer2/MaxOrderTime;
+        timeBar3.fillAmount = OrderTimer3/MaxOrderTime;
         
     }
 
@@ -171,17 +183,19 @@ public class OrderWindow : MonoBehaviour
         OrderTimer2 = MaxOrderTime;
         OrderTimer3 = MaxOrderTime;
         gameTimer = gameTime;
-        ChangeOrder(Order1, Random.Range(0, 12), currentOrder1);
-        ChangeOrder(Order2, Random.Range(0, 12), currentOrder2);
-        ChangeOrder(Order3, Random.Range(0, 12), currentOrder3);
+        ChangeOrder(Order1, Random.Range(0, 12));
+        ChangeOrder(Order2, Random.Range(0, 12));
+        ChangeOrder(Order3, Random.Range(0, 12));
     }
 
     public void ClearOrder1()
     {
         if (playing)
         {
+            int rand = Random.Range(0, 12);
             gameScore += pointValues[currentOrder1];
-            ChangeOrder(Order1, Random.Range(0, 12), currentOrder1);
+            ChangeOrder(Order1, rand);
+            currentOrder1 = rand;
             OrderTimer1 = MaxOrderTime;
         }
     }
@@ -189,8 +203,10 @@ public class OrderWindow : MonoBehaviour
     {
         if (playing)
         {
+            int rand = Random.Range(0, 12);
             gameScore += pointValues[currentOrder2];
-            ChangeOrder(Order2, Random.Range(0, 12), currentOrder2);
+            ChangeOrder(Order2, rand);
+            currentOrder2 = rand;
             OrderTimer2 = MaxOrderTime;
         }
     }
@@ -198,182 +214,76 @@ public class OrderWindow : MonoBehaviour
     {
         if (playing)
         {
+            int rand = Random.Range(0, 12);
             gameScore += pointValues[currentOrder3];
-            ChangeOrder(Order3, Random.Range(0, 12), currentOrder3);
+            ChangeOrder(Order3, rand);
+            currentOrder3 = rand;
             OrderTimer3 = MaxOrderTime;
         }
     }
 
-    void ChangeOrder(Image Order, int num, int currentOrder)
+    void ChangeOrder(Image Order, int num)
     {
         switch(num)
         {
             case 0:
             {
-                if(cardCounts[0] > 0)
-                {
-                    Order.sprite = burger;
-                    cardCounts[0]--;
-                    currentOrder = 0;
-                }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = burger;
                 break;
             }
             case 1:
             {
-                if(cardCounts[1] > 0)
-                {
-                    Order.sprite = cheeseBurger;
-                    cardCounts[1]--;
-                    currentOrder = 1;
-                }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = cheeseBurger;
                 break;
             }
             case 2:
             {
-                if(cardCounts[2] > 0)
-                {
-                    Order.sprite = cheesePizza;
-                    cardCounts[2]--;
-                        currentOrder = 2;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = cheesePizza;
                 break;
             }
             case 3:
             {
-                if(cardCounts[3] > 0)
-                {
-                    Order.sprite = meatPizza;
-                    cardCounts[3]--;
-                        currentOrder = 3;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = meatPizza;
                 break;
             }
             case 4:
             {
-                if(cardCounts[4] > 0)
-                {
-                    Order.sprite = fishPizza;
-                    cardCounts[4]--;
-                        currentOrder = 4;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = fishPizza;
                 break;
             }
             case 5:
             {
-                if(cardCounts[5] > 0)
-                {
-                    Order.sprite = fishNChips;
-                    cardCounts[5]--;
-                        currentOrder = 5;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = fishNChips;
                 break;
             }
             case 6:
             {
-                if(cardCounts[6] > 0)
-                {
-                    Order.sprite = fries;
-                    cardCounts[6]--;
-                        currentOrder = 6;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = fries;
                 break;
             }
             case 7:
             {
-                if(cardCounts[7] > 0)
-                {
-                    Order.sprite = vegWich;
-                    cardCounts[7]--;
-                        currentOrder = 7;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = vegWich;
                 break;
             }
             case 8:
             {
-                if(cardCounts[8] > 0)
-                {
-                    Order.sprite = grilledCheese;
-                    cardCounts[8]--;
-                        currentOrder = 8;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = grilledCheese;
                 break;
             }
             case 9:
             {
-                if(cardCounts[9] > 0)
-                {
-                    Order.sprite = salad;
-                    cardCounts[9]--;
-                        currentOrder = 9;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = salad;
                 break;
             }
             case 10:
             {
-                if(cardCounts[10] > 0)
-                {
-                    Order.sprite = gardenSalad;
-                    cardCounts[10]--;
-                        currentOrder = 10;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = gardenSalad;
                 break;
             }
             case 11:
             {
-                if(cardCounts[11] > 0)
-                {
-                    Order.sprite = soup;
-                    cardCounts[11]--;
-                        currentOrder = 11;
-                    }
-                else
-                {
-                    ChangeOrder(Order, ++num, currentOrder);
-                }
+                Order.sprite = soup;
                 break;
             }
             default:
