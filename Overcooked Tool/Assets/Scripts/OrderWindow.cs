@@ -47,6 +47,7 @@ public class OrderWindow : MonoBehaviour
 
     float MaxOrderTime = 120;
     int CardCount = 3;
+    int cardCheck = 0;
 
     int[] cardCounts = new int[12];
 
@@ -72,6 +73,8 @@ public class OrderWindow : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        MakeDeck();
+
         for(int i = 0; i < pointValues.Length; i++)
         {
             if (i == (int)orderCards.SAL)
@@ -114,18 +117,45 @@ public class OrderWindow : MonoBehaviour
 
             if(OrderTimer1 <= 0)
             {
+                while(cardCounts[rand1] == 0)
+                {
+                    rand1++;
+                    cardCheck++;
+                    if(rand1 > 11)
+                        rand1 = 0;
+                    if(cardCheck >= 12)
+                        MakeDeck();
+                }
                 ChangeOrder(Order1, rand1);
                 OrderTimer1 = MaxOrderTime;
                 gameScore -= 10;
             }
             if(OrderTimer2 <= 0)
             {
+                while(cardCounts[rand2] == 0)
+                {
+                    rand2++;
+                    cardCheck++;
+                    if(rand2 > 11)
+                        rand2 = 0;
+                    if(cardCheck >= 12)
+                        MakeDeck();
+                }
                 ChangeOrder(Order2, rand2);
                 OrderTimer2 = MaxOrderTime;
                 gameScore -= 10;
             }
             if(OrderTimer3 <= 0)
             {
+                while(cardCounts[rand3] == 0)
+                {
+                    rand3++;
+                    cardCheck++;
+                    if(rand3 > 11)
+                        rand3 = 0;
+                    if(cardCheck >= 12)
+                        MakeDeck();
+                }
                 ChangeOrder(Order3, rand3);
                 OrderTimer3 = MaxOrderTime;
                 gameScore -= 10;
@@ -135,14 +165,6 @@ public class OrderWindow : MonoBehaviour
             OrderTimer2 -= Time.deltaTime;
             OrderTimer3 -= Time.deltaTime;
 
-            if (noCards)
-            {
-                for (int i = 0; i < cardCounts.Length; i++)
-                {
-                    cardCounts[i] = CardCount;
-                }
-                noCards = false;
-            }
             pauseButtonText.text = "Pause";
             gameTimer -= Time.deltaTime;
             if (gameTimer <= 0)
@@ -193,6 +215,17 @@ public class OrderWindow : MonoBehaviour
         if (playing)
         {
             int rand = Random.Range(0, 12);
+            while(cardCounts[rand] == 0)
+            {
+                rand++;
+                cardCheck++;
+
+                if(rand > 11)
+                    rand = 0;
+                if(cardCheck >= 12)
+                    MakeDeck();
+            }
+
             gameScore += pointValues[currentOrder1];
             ChangeOrder(Order1, rand);
             currentOrder1 = rand;
@@ -204,6 +237,16 @@ public class OrderWindow : MonoBehaviour
         if (playing)
         {
             int rand = Random.Range(0, 12);
+            while(cardCounts[rand] == 0)
+            {
+                rand++;
+                cardCheck++;
+                if(rand > 11)
+                    rand = 0;
+                if(cardCheck >= 12)
+                    MakeDeck();
+            }
+
             gameScore += pointValues[currentOrder2];
             ChangeOrder(Order2, rand);
             currentOrder2 = rand;
@@ -215,6 +258,16 @@ public class OrderWindow : MonoBehaviour
         if (playing)
         {
             int rand = Random.Range(0, 12);
+            while(cardCounts[rand] == 0)
+            {
+                rand++;
+                cardCheck++;
+                if(rand > 11)
+                    rand = 0;
+                if(cardCheck >= 12)
+                    MakeDeck();
+            }
+
             gameScore += pointValues[currentOrder3];
             ChangeOrder(Order3, rand);
             currentOrder3 = rand;
@@ -224,6 +277,8 @@ public class OrderWindow : MonoBehaviour
 
     void ChangeOrder(Image Order, int num)
     {
+        cardCounts[num]--;
+        cardCheck = 0;
         switch(num)
         {
             case 0:
@@ -288,10 +343,20 @@ public class OrderWindow : MonoBehaviour
             }
             default:
             {
-                noCards = true;
-                Debug.Log("Replenishing deck");
                 break;
             }
+        }
+    }
+
+    void MakeDeck()
+    {
+        Debug.Log("Replenishing deck");
+        for(int i = 0; i < cardCounts.Length; i++)
+        {
+            if (i >= 2 && i <= 4)
+                cardCounts[i] = 2;
+            else
+                cardCounts[i] = CardCount;
         }
     }
 }
