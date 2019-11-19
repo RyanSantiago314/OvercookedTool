@@ -34,7 +34,7 @@ public class OrderWindow : MonoBehaviour
     int gameSeconds;
     int gameScore;
 
-    bool playing = true;
+    public bool playing = false;
     bool noCards = false;
 
     float OrderTimer1 = 120;
