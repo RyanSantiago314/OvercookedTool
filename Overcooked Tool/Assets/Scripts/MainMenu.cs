@@ -38,4 +38,12 @@ public class MainMenu : MonoBehaviour
         OrderWindow.enabled = true;
         menu.enabled = false;
     }
+
+    public void MainMenuButton()
+    {
+        cam.position = new Vector3(0, 0, cam.position.z);
+        menu.enabled = true;
+        OrderWindow.enabled = false;
+        Stations.enabled = false;
+    }
 }

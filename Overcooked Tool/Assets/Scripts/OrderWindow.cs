@@ -100,11 +100,18 @@ public class OrderWindow : MonoBehaviour
         currentOrder1 = rand1;
         currentOrder2 = rand2;
         currentOrder3 = rand3;
+
+        GameReset();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (gameSeconds > 9)
+            timeText.text = gameMinutes + ":" + gameSeconds;
+        else
+            timeText.text = gameMinutes + ":0" + gameSeconds;
+
         if (playing)
         {
             int rand1 = Random.Range(0,12);
@@ -175,14 +182,10 @@ public class OrderWindow : MonoBehaviour
         }
         else
         {
-            pauseButtonText.text = "Resume";
+            pauseButtonText.text = "Play";
         }
 
         scoreText.text = gameScore.ToString();
-        if (gameSeconds > 9)
-            timeText.text = gameMinutes + ":" + gameSeconds;
-        else
-            timeText.text = gameMinutes + ":0" + gameSeconds;
 
         timeBar1.fillAmount = OrderTimer1/MaxOrderTime;
         timeBar2.fillAmount = OrderTimer2/MaxOrderTime;
@@ -200,6 +203,7 @@ public class OrderWindow : MonoBehaviour
 
     public void GameReset()
     {
+        playing = false;
         gameScore = 0;
         OrderTimer1 = MaxOrderTime;
         OrderTimer2 = MaxOrderTime;
