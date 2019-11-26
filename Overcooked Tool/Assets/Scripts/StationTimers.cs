@@ -17,6 +17,16 @@ public class StationTimers : MonoBehaviour
     public Image timeBarOven;
     public Image timeBarStove;
 
+    public AudioSource frySound;
+    public AudioSource ovenSound;
+    public AudioSource stoveSound;
+
+    public AudioClip stoveSizzle;
+    public AudioClip fryerSizzle;
+    public AudioClip ovenFan;
+    public AudioClip smokeAlarm;
+    public AudioClip ding;
+
     int OvenTime = 25;
     int FryerTime = 15;
     int StoveTime = 20;
@@ -76,6 +86,12 @@ public class StationTimers : MonoBehaviour
         {
             timeBarFry.color = Color.black;
             FryButton.color = new Color32(100, 0, 0, 255);
+            if (frySound.clip != smokeAlarm)
+            {
+                frySound.clip = smokeAlarm;
+                frySound.loop = true;
+                frySound.Play();
+            }
         }
         else if (FryerTimer <= FryerTime)
         {
@@ -86,12 +102,27 @@ public class StationTimers : MonoBehaviour
         {
             timeBarFry.color = Color.Lerp(new Color32(40, 128, 40, 255), new Color32(10, 0, 0, 255), (FryerTimer - FryerTime) / 5);
             FryButton.color = Color.Lerp(new Color32(69, 207, 176, 255), new Color32(100, 0, 0, 255), (FryerTimer - FryerTime) / 5);
+
+            if (frySound.clip != ding)
+            {
+                frySound.Stop();
+                frySound.clip = ding;
+                frySound.Play();
+                frySound.loop = false;
+            }
         }
 
         if (OvenFire)
         {
             timeBarOven.color = Color.black;
             OvenButton.color = new Color32(100, 0, 0, 255);
+
+            if (ovenSound.clip != smokeAlarm)
+            {
+                ovenSound.clip = smokeAlarm;
+                ovenSound.loop = true;
+                ovenSound.Play();
+            }
         }
         else if (OvenTimer <= OvenTime)
         {
@@ -102,12 +133,26 @@ public class StationTimers : MonoBehaviour
         {
             timeBarOven.color = Color.Lerp(new Color32(40, 128, 40, 255), new Color32(10, 0, 0, 255), (OvenTimer - OvenTime) / 5);
             OvenButton.color = Color.Lerp(new Color32(69, 207, 176, 255), new Color32(100, 0, 0, 255), (OvenTimer - OvenTime) / 5);
+            if (ovenSound.clip != ding)
+            {
+                ovenSound.Stop();
+                ovenSound.clip = ding;
+                ovenSound.Play();
+                ovenSound.loop = false;
+            }
         }
 
         if (StoveFire)
         {
             timeBarStove.color = Color.black;
             StoveButton.color = new Color32(100, 0, 0, 255);
+
+            if (stoveSound.clip != smokeAlarm)
+            {
+                stoveSound.clip = smokeAlarm;
+                stoveSound.loop = true;
+                stoveSound.Play();
+            }
         }
         else if (StoveTimer <= StoveTime)
         {
@@ -118,6 +163,14 @@ public class StationTimers : MonoBehaviour
         {
             timeBarStove.color = Color.Lerp(new Color32(40, 128, 40, 255), new Color32(10, 0, 0, 255), (StoveTimer - StoveTime) / 5);
             StoveButton.color = Color.Lerp(new Color32(69, 207, 176, 255), new Color32(100, 0, 0, 255), (StoveTimer - StoveTime) / 5);
+
+            if (stoveSound.clip != ding)
+            {
+                stoveSound.Stop();
+                stoveSound.clip = ding;
+                stoveSound.Play();
+                stoveSound.loop = false;
+            }
         }
 
         timeBarFry.fillAmount = FryerTimer / FryerTime;
@@ -140,6 +193,9 @@ public class StationTimers : MonoBehaviour
             if(!UsingFry)
             {
                 UsingFry = true;
+                frySound.clip = fryerSizzle;
+                frySound.Play();
+                frySound.loop = true;
             }
             else if (FryFire)
             {
@@ -149,6 +205,8 @@ public class StationTimers : MonoBehaviour
                     FryerTimer = 0;
                     FryFire = false;
                     UsingFry = false;
+                    frySound.Stop();
+                    frySound.loop = false;
                 }
             }
             else if (UsingFry && FryerTimer >= FryerTime)
@@ -162,6 +220,9 @@ public class StationTimers : MonoBehaviour
             if(!UsingOven)
             {
                 UsingOven = true;
+                ovenSound.clip = ovenFan;
+                ovenSound.Play();
+                ovenSound.loop = true;
             }
             else if (OvenFire)
             {
@@ -171,6 +232,8 @@ public class StationTimers : MonoBehaviour
                     OvenTimer = 0;
                     OvenFire = false;
                     UsingOven = false;
+                    ovenSound.Stop();
+                    ovenSound.loop = false;
                 }
             }
             else if (UsingOven && OvenTimer >= OvenTime)
@@ -184,6 +247,9 @@ public class StationTimers : MonoBehaviour
             if(!UsingStove)
             {
                 UsingStove = true;
+                stoveSound.clip = stoveSizzle;
+                stoveSound.Play();
+                stoveSound.loop = true;
             }
             else if (StoveFire)
             {
@@ -193,6 +259,8 @@ public class StationTimers : MonoBehaviour
                     StoveTimer = 0;
                     StoveFire = false;
                     UsingStove = false;
+                    stoveSound.Stop();
+                    stoveSound.loop = false;
                 }
             }
             else if (UsingStove && StoveTimer >= StoveTime)
@@ -209,16 +277,19 @@ public class StationTimers : MonoBehaviour
         {
             UsingFry = false;
             FryerTimer = 0;
+            frySound.Stop();
         }
         else if (station == "Oven" && !OvenFire && UsingOven)
         {
             UsingOven = false;
             OvenTimer = 0;
+            ovenSound.Stop();
         }
         else if (!StoveFire && UsingStove)
         {
             UsingStove = false;
             StoveTimer = 0;
+            stoveSound.Stop();
         }
     }
 

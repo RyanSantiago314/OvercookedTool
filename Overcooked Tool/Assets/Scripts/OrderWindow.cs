@@ -15,6 +15,11 @@ public class OrderWindow : MonoBehaviour
     public Text pauseButtonText;
     public Text timeText;
 
+    public AudioSource source;
+
+    public AudioClip ding;
+    public AudioClip miss;
+
     public Sprite burger;
     public Sprite cheeseBurger;
     public Sprite cheesePizza;
@@ -136,6 +141,8 @@ public class OrderWindow : MonoBehaviour
                 ChangeOrder(Order1, rand1);
                 OrderTimer1 = MaxOrderTime;
                 gameScore -= 10;
+                source.clip = miss;
+                source.Play();
             }
             if(OrderTimer2 <= 0)
             {
@@ -151,6 +158,8 @@ public class OrderWindow : MonoBehaviour
                 ChangeOrder(Order2, rand2);
                 OrderTimer2 = MaxOrderTime;
                 gameScore -= 10;
+                source.clip = miss;
+                source.Play();
             }
             if(OrderTimer3 <= 0)
             {
@@ -166,6 +175,8 @@ public class OrderWindow : MonoBehaviour
                 ChangeOrder(Order3, rand3);
                 OrderTimer3 = MaxOrderTime;
                 gameScore -= 10;
+                source.clip = miss;
+                source.Play();
             }
 
             OrderTimer1 -= Time.deltaTime;
@@ -234,6 +245,8 @@ public class OrderWindow : MonoBehaviour
             ChangeOrder(Order1, rand);
             currentOrder1 = rand;
             OrderTimer1 = MaxOrderTime;
+            source.clip = ding;
+            source.Play();
         }
     }
     public void ClearOrder2()
@@ -255,6 +268,8 @@ public class OrderWindow : MonoBehaviour
             ChangeOrder(Order2, rand);
             currentOrder2 = rand;
             OrderTimer2 = MaxOrderTime;
+            source.clip = ding;
+            source.Play();
         }
     }
     public void ClearOrder3()
@@ -276,6 +291,8 @@ public class OrderWindow : MonoBehaviour
             ChangeOrder(Order3, rand);
             currentOrder3 = rand;
             OrderTimer3 = MaxOrderTime;
+            source.clip = ding;
+            source.Play();
         }
     }
 
