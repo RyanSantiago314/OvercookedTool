@@ -16,8 +16,10 @@ public class OrderWindow : MonoBehaviour
     public Text timeText;
 
     public AudioSource source;
+    public AudioSource music;
 
     public AudioClip ding;
+    public AudioClip endBell;
     public AudioClip miss;
 
     public Sprite burger;
@@ -33,7 +35,7 @@ public class OrderWindow : MonoBehaviour
     public Sprite gardenSalad;
     public Sprite soup;
 
-    float gameTime = 601;
+    float gameTime = 90;
     float gameTimer;
     int gameMinutes;
     int gameSeconds;
@@ -186,7 +188,12 @@ public class OrderWindow : MonoBehaviour
             pauseButtonText.text = "Pause";
             gameTimer -= Time.deltaTime;
             if (gameTimer <= 0)
+            {
                 playing = false;
+                music.Stop();
+                source.clip = endBell;
+                source.Play();
+            }
 
             gameMinutes = (int)gameTimer / 60;
             gameSeconds = (int)gameTimer % 60;
@@ -201,20 +208,32 @@ public class OrderWindow : MonoBehaviour
         timeBar1.fillAmount = OrderTimer1/MaxOrderTime;
         timeBar2.fillAmount = OrderTimer2/MaxOrderTime;
         timeBar3.fillAmount = OrderTimer3/MaxOrderTime;
+
+        if (gameTimer <= 61)
+            music.pitch = 1.5f;
+        else
+            music.pitch = 1;
         
     }
 
     public void GameStartPause()
     {
         if (playing)
+        {
             playing = false;
+            music.Pause();
+        }
         else
+        {
             playing = true;
+            music.Play();
+        }
     }
 
     public void GameReset()
     {
         playing = false;
+        music.Stop();
         gameScore = 0;
         OrderTimer1 = MaxOrderTime;
         OrderTimer2 = MaxOrderTime;
